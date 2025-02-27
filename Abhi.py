@@ -70,3 +70,58 @@ async def lyric_get(bot, message):
             )
             await bot.send_document(message.chat.id, document=f'downloads/{TITLE}.txt', caption=f'\n{TITLE}\n{ARTISTE}')
             os.remove(f'downloads/{TITLE}.txt')
+
+
+@bot.on_inline_query()
+async def inlinequery(client, inline_query):
+    answer = []
+    if inline_query.query == "":
+        await inline_query.answer(
+            results=[
+
+                InlineQueryResultArticle(
+                    title="ʟʏʀɪᴄꜱ ᴋᴇ ʟɪʏᴇ ꜱᴇᴀʀᴄʜ ᴋᴀʀᴏ...",
+                    description="Lyrics bot",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton("🔍ʟʏʀɪᴄꜱ ᴋᴇ ʟɪʏᴇ ꜱᴇᴀʀᴄʜ ᴋᴀʀᴏ..", switch_inline_query_current_chat="")
+                            ]
+                        ]
+                    ),
+                    input_message_content=InputTextMessageContent(
+                        "Search for lyrics inline..."
+                    )
+                )
+            ]
+        )
+    else:
+        INLINE_SONG = inline_query.query
+        print(INLINE_SONG)
+        INLINE_LYRICS = GENIUS.search_song(INLINE_SONG)
+        INLINE_TITLE = INLINE_LYRICS.title
+        INLINE_ARTISTE = INLINE_LYRICS.artist
+        INLINE_TEXT = INLINE_LYRICS.lyrics
+        answer.append(
+            InlineQueryResultArticle(
+                title=INLINE_TITLE,
+                description=INLINE_ARTISTE,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton("ᴡʀᴏɴɢ ʀᴇꜱᴜʟᴛ?", switch_inline_query_current_chat=INLINE_SONG),
+                            InlineKeyboardButton("🔍ꜰɪʀ ꜱᴇ ꜱᴇᴀʀᴄʜ ᴋɪᴊɪʏᴇ ɴᴀ..", switch_inline_query_current_chat="")
+                        ]
+                    ]
+                ),
+                input_message_content=InputTextMessageContent(f"**мυנнє ує мιℓα...**\n\n🎶Name: **{INLINE_TITLE}**\n🎙️Artiste: **{INLINE_ARTISTE}**\n\n`{INLINE_TEXT}`")
+            )
+        )
+    await inline_query.answer(
+        results=answer,
+        cache_time=1
+    )
+
+
+print("𝙰𝙱𝙷𝙸 𝙻𝚈𝚁𝙸𝙲𝚂 𝙱𝙾𝚃 𝙲𝙷𝙰𝙻𝚄 𝙷𝙾 𝙶𝙰𝚈𝙰 𝙷𝙰𝙸")
+bot.run()
