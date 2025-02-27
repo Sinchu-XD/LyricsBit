@@ -24,8 +24,49 @@ async def start(bot, message):
                                             f"Qᴜɪᴛᴇ ꜱɪᴍᴘʟᴇ.", reply_markup=InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🔍ᴀʙʜɪ ʟʏʀɪᴄꜱ ꜱᴇᴀʀᴄʜɪɴɢ", switch_inline_query_current_chat="")
+                InlineKeyboardButton("🔍ʀᴜᴋᴏ ᴀʙʜɪ ʟʏʀɪᴄꜱ ᴅʜᴜɴᴅʜ ʀᴀʜᴀ ʜᴜ...", switch_inline_query_current_chat="")
             ]
         ]
     ))
   
+
+@bot.on_message(filters.text & filters.private)
+async def lyric_get(bot, message):
+    try:
+        m = await message.reply(
+            "🔍ʀᴜᴋᴏ ᴀʙʜɪ ʟʏʀɪᴄꜱ ᴅʜᴜɴᴅʜ ʀᴀʜᴀ ʜᴜ..."
+        )
+        song_name = message.text
+        LYRICS = GENIUS.search_song(song_name)
+        if LYRICS is None:
+            await m.edit_text(
+                "  🎀  𝒦♡𝒾 𝐿𝓎𝓇𝒾𝒸𝓈 𝒩𝒶𝒽𝒾 𝑀𝒾𝓁𝒶  🍬"
+            )
+        global TITLE
+        global ARTISTE
+        global TEXT
+        TITLE = LYRICS.title
+        ARTISTE = LYRICS.artist
+        TEXT = LYRICS.lyrics
+    except Timeout:
+        pass
+    except HTTPError as https_e:
+        print(https_e)
+    try:
+        await m.edit_text(
+            f"🎶𝒢𝒶𝒶𝓃𝑒 𝒦𝒶 𝒩𝒶𝒶𝓂: **{TITLE}**\n🎙️Artiste: **{ARTISTE}**\n\n`{TEXT}`", reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton("🔍ʀᴜᴋᴏ ᴀʙʜɪ ʟʏʀɪᴄꜱ ᴅʜᴜɴᴅʜ ʀᴀʜᴀ ʜᴜ...", switch_inline_query_current_chat="")
+                    ]
+                ]
+            )
+        )
+    except MessageTooLong:
+        with open(f'downloads/{TITLE}.txt', 'w') as file:
+            file.write(f'{TITLE}\n{ARTISTE}\n\n{TEXT}')
+            await m.edit_text(
+                "ʟʏʀɪᴄꜱ ʟᴀᴍʙɪ ʜᴀɪ ɪꜱʟɪʏᴇ ᴛᴇxᴛ ꜰɪʟᴇ ᴍᴇ ʙʜᴇᴊ ʀᴀʜᴀ ʜᴜ..."
+            )
+            await bot.send_document(message.chat.id, document=f'downloads/{TITLE}.txt', caption=f'\n{TITLE}\n{ARTISTE}')
+            os.remove(f'downloads/{TITLE}.txt')
